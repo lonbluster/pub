@@ -17,7 +17,7 @@ $mailParams = @{
         From                       = $to
         To                         = $to
         Encoding                    = "$enc"
-        Subject                    = "([System.Net.Dns]::GetHostEntry($env:computerName)).hostname - $($(get-date).ToString("HH':'mm")) -EVENTS"
+        Subject                    = "$(([System.Net.Dns]::GetHostEntry($env:computerName)).hostname) - $($(get-date).ToString("HH':'mm")) -EVENTS"
         # DeliveryNotificationOption = 'OnFailure', 'OnSuccess'
         Attachment                   = $csv
     } #end mail param
