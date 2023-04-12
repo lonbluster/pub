@@ -6,7 +6,9 @@ $Cred = New-Object -TypeName System.Management.Automation.PSCredential -Argument
 
 $to = 'andrea.gasparetto@informaticall.it'
 #PRIVATE
-$body = @{Body = "Attached last $hours hours of logs..."}
+$errorEvents = $(Get-WinEvent -ErrorAction Continue -WarningAction Continue -MaxEvents 5 -FilterHashtable @{ logname='system','application'; level=1,2 } | Format-List id,TimeCreated,Message)
+$body = @{Body = "Attached last $hours hours of logs... `n `n-------------------  Last 5 Errors Only :  `n  
+    $(Out-String -InputObject $errorEvents) "}
 $mailParams = @{
         SmtpServer                 = 'smtps.aruba.it'
         Port                       = '587'
