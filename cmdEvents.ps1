@@ -24,3 +24,5 @@ $mailParams = @{
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 #required for sending email
     Send-MailMessage @mailParams @body
+    Start-Sleep -s 3
+    Remove-Item $csv
