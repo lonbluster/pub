@@ -1,3 +1,4 @@
+Set-ExecutionPolicy -ExecutionPolicy bypass -Force
 $enc= "utf8"       ;       if (!($hours_)) { $hours= -24 } else {$hours=-$hours_}        ;       $date=(get-date).ToString("MMMMdd_'H'HH'.'mm")       ;       $csv= "$(hostname)_eventsTo$date.csv"       ;       Get-WinEvent -ErrorAction Continue -WarningAction Continue -FilterHashtable @{ logname='system','application'; level=1,2,3 ; StartTime=[datetime]::now.AddHours($hours) ; EndTime=[datetime]::now }       |       Select-Object TimeCreated,LevelDisplayName,LogName,id,ProviderName,Message       |       Export-Csv -Encoding $enc -Path .\$csv -NoTypeInformation
 
 $User = "andrea.gasparetto@informaticall.it"
