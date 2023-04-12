@@ -7,7 +7,9 @@ $Cred = New-Object -TypeName System.Management.Automation.PSCredential -Argument
 $to = 'andrea.gasparetto@informaticall.it'
 #PRIVATE
 $errorEvents = $(Get-WinEvent -ErrorAction Continue -WarningAction Continue -MaxEvents 5 -FilterHashtable @{ logname='system','application'; level=1,2 } | Format-List id,TimeCreated,Message)
-$body = @{Body = "Attached last $hours hours of logs... `n `n-------------------  Last 5 Errors Only :  `n  
+$model = (Get-CimInstance -ClassName Win32_ComputerSystem).model
+$diskspace= (Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'Size (GB)'; Expression= {[int]($_.size / 1GB) }},@{'Name' = 'Free (GB)'; Expression= { [int]($_.Freespace / 1GB) }})
+$body = @{Body = "$model `n $(Out-String -InputObject $diskspace) `n Attached last $hours hours of logs... `n `n-------------------  Last 5 Errors Only :  `n  
     $(Out-String -InputObject $errorEvents) "}
 $mailParams = @{
         SmtpServer                 = 'smtps.aruba.it'
@@ -22,7 +24,9 @@ $mailParams = @{
         Attachment                   = $csv
     } #end mail param
 
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 #required for sending email
-    Send-MailMessage @mailParams @body
-    Start-Sleep -s 3
-    Remove-Item $csv
+[System.Net.ServicePointManager]::ServerCertificateValidationCallback = { return $true }
+
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 #required for sending email
+Send-MailMessage @mailParams @body
+Start-Sleep -s 3
+Remove-Item $csv
