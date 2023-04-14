@@ -8,9 +8,10 @@ $to = 'andrea.gasparetto@informaticall.it'
 #PRIVATE
 $errorEvents = $(Get-WinEvent -ErrorAction Continue -WarningAction Continue -MaxEvents 5 -FilterHashtable @{ logname='system','application'; level=1,2 } | Format-List id,TimeCreated,Message)
 $model = (Get-CimInstance -ClassName Win32_ComputerSystem).model
+$ram = Get-CimInstance -ClassName Win32_PhysicalMemory | Format-Table Devicelocator, Manufacturer, Speed, ConfiguredClockSpeed, BankLabel
 $diskspace= (Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'Size (GB)'; Expression= {[int]($_.size / 1GB) }},@{'Name' = 'Free (GB)'; Expression= { [int]($_.Freespace / 1GB) }})
 $uptime= ([math]::Round(((get-date) - (gcim Win32_OperatingSystem).LastBootUpTime).totaldays/1,2))
-$body = @{Body = " Model: $model `n Giorni Uptime: $uptime `n $(Out-String -InputObject $diskspace) `n  Attached last $hours hours of logs... `n `n-------------------  Last 5 Errors Only :  `n  
+$body = @{Body = " Model: $model `n Giorni Uptime: $uptime `n $(Out-String -InputObject $diskspace) `n $(Out-String -InputObject $ram) `n  Attached last $hours hours of logs... `n `n-------------------  Last 5 Errors Only :  `n  
     $(Out-String -InputObject $errorEvents) "}
 $mailParams = @{
         SmtpServer                 = 'smtps.aruba.it'
