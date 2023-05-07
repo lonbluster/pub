@@ -1,10 +1,10 @@
 $enc= "utf8"       ;       if (!($hours_)) { $hours= -48 } else {$hours=-$hours_}        ;       $date=(get-date).ToString("MMMMdd_'H'HH'.'mm")       ;       $csv= "$(hostname)_eventsTo$date.csv"       ;       Get-WinEvent -ErrorAction Continue -WarningAction Continue -FilterHashtable @{ logname='system','application'; level=1,2,3 ; StartTime=[datetime]::now.AddHours($hours) ; EndTime=[datetime]::now }       |       Select-Object TimeCreated,LevelDisplayName,LogName,id,ProviderName,Message       |       Export-Csv -Encoding $enc -Path .\$csv -NoTypeInformation
 
-$User = "andrea.gasparetto@informaticall.it"
-$PWord = ConvertTo-SecureString -String "ZWgEDdnqggV7!" -AsPlainText -Force
+$User = "logs@informaticall.it"
+$PWord = ConvertTo-SecureString -String "log@smtp.ARUBA23" -AsPlainText -Force
 $Cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $User, $PWord
 
-$to = 'andrea.gasparetto@informaticall.it'
+$to = 'logs@informaticall.it'
 #PRIVATE
 $errorEvents = Out-String -InputObject $(Get-WinEvent -ErrorAction Continue -WarningAction Continue -MaxEvents 5 -FilterHashtable @{ logname='system','application'; level=1,2 } | Format-List id,TimeCreated,Message)
 $model = (Get-CimInstance -ClassName Win32_ComputerSystem).model
