@@ -11,7 +11,7 @@ $model = (Get-CimInstance -ClassName Win32_ComputerSystem).model
 $ram = Out-String -InputObject $(Get-CimInstance -ClassName Win32_PhysicalMemory | Format-List Devicelocator, Manufacturer, Speed, Capacity, BankLabel, PartNumber)
 $diskspace= Out-String -InputObject $(Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'Size (GB)'; Expression= {[int]($_.size / 1GB) }},@{'Name' = 'Free (GB)'; Expression= { [int]($_.Freespace / 1GB) }})
 $uptime= ([math]::Round(((get-date) - (gcim Win32_OperatingSystem).LastBootUpTime).totaldays/1,2))
-$users= Out-String -InputObject $(Get-ChildItem C:\Users)
+$users= Out-String -InputObject $(Get-ChildItem C:\Users|sort-object -property LastWriteTime)
 $body = @{Body = " Model: $model `n Giorni Uptime: $uptime `n $diskspace `n $ram `n $users `n Attached last $hours hours of logs... `n -------------------  Last 5 Errors Only :  `n  $errorEvents "}
 $mailParams = @{
         SmtpServer                 = 'smtps.aruba.it'
